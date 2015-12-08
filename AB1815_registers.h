@@ -1,6 +1,6 @@
 /**
-  * An Abracon AB18X5 Real-Time Clock library for the ATMEL SAM0 ARM chips
-  * using the ASF libraries. Copyright (C) 2015 NigelB
+  *	An Abracon AB18X5 Real-Time Clock library for Arduino
+  *	Copyright (C) 2015 NigelB
   *
   *	This program is free software; you can redistribute it and/or modify
   *	it under the terms of the GNU General Public License as published by
