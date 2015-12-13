@@ -300,6 +300,7 @@ AB1815(uint16_t cs_pin);
 
 // 0x00
 time_t get();
+void set(time_t time);
 enum ab1815_status get_time(ab1815_tmElements_t *time);
 enum ab1815_status set_time(ab1815_tmElements_t *time);
 enum ab1815_status hundrdeds();

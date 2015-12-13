@@ -27,7 +27,6 @@ AB1815::AB1815(uint16_t cs_pin){
 	pinMode(cs_pin, OUTPUT);
 	pinMode(SS, OUTPUT);
 	digitalWrite(cs_pin, HIGH);
-
 	SPI.setBitOrder(MSBFIRST);
 	SPI.setDataMode(SPI_MODE0);
 	SPI.setClockDivider(SPI_CLOCK_DIV128);
@@ -108,6 +107,14 @@ time_t AB1815::get()
 	ab1815_tmElements_t tm;
 	get_time(&tm);
 	return makeTime(tm);
+}
+
+// 0x00
+void AB1815::set(time_t time)
+{
+	ab1815_tmElements_t tm;
+	breakTime(time, tm);
+	set_time(&tm);
 }
 
 // 0x00
@@ -351,8 +358,6 @@ enum ab1815_status AB1815::set_oscillator_control(struct oscillator_control_t *o
 	{
 		return ab1815_status_ERROR;
 	}
-	Serial.print("Setting osc: ");
-	Serial.println(oscillator_control->value);
 	return write(AB1815_REG_OSCILLATOR_CONTROL, &oscillator_control->value, 1);
 };
 
