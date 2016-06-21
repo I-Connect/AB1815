@@ -450,130 +450,128 @@ private:
 		uint8_t clk_source: 2;
 	} fields;
 
-
-
-enum ab1815_status_e init();
-enum ab1815_status_e read(uint8_t offset, uint8_t *buf, uint8_t length);
-enum ab1815_status_e write(uint8_t offset, uint8_t *buf, uint8_t length);
-void spi_select_slave(bool select);
+    enum ab1815_status_e init();
+    enum ab1815_status_e read(uint8_t offset, uint8_t *buf, uint8_t length);
+    enum ab1815_status_e write(uint8_t offset, uint8_t *buf, uint8_t length);
+    void spi_select_slave(bool select);
 
 public:
-ab1815_id_t id;
+    ab1815_id_t id;
 
-AB1815(uint16_t cs_pin);
+    AB1815(uint16_t cs_pin);
 
-// 0x00
-time_t get();
-void set(time_t time);
-enum ab1815_status_e get_time(ab1815_tmElements_t *time);
-enum ab1815_status_e set_time(ab1815_tmElements_t *time);
-enum ab1815_status_e hundrdeds();
-enum ab1815_status_e clear_hundrdeds();
+    // 0x00
+    time_t get();
+    void set(time_t time);
+    enum ab1815_status_e get_time(ab1815_tmElements_t *time);
+    enum ab1815_status_e set_time(ab1815_tmElements_t *time);
+    enum ab1815_status_e hundrdeds();
+    enum ab1815_status_e clear_hundrdeds();
 
-// 0x08
-enum ab1815_status_e get_alarm(ab1815_tmElements_t *time, enum ab1815_alarm_repeat_mode *alarm_mode);
-enum ab1815_status_e set_alarm(ab1815_tmElements_t *time, enum ab1815_alarm_repeat_mode alarm_mode);
+    // 0x08
+    enum ab1815_status_e get_alarm(ab1815_tmElements_t *time, enum ab1815_alarm_repeat_mode *alarm_mode);
+    enum ab1815_status_e set_alarm(ab1815_tmElements_t *time, enum ab1815_alarm_repeat_mode alarm_mode);
 
-// 0x0F - See also: ARST in Control1. 
-//	If ARST is a 1, a read of the Status register will produce the current state of all 
-//	the interrupt flags and then clear them
-enum ab1815_status_e set_status(status_t* status);
-enum ab1815_status_e get_status(status_t* status);
+    // 0x0F - See also: ARST in Control1.
+    //	If ARST is a 1, a read of the Status register will produce the current state of all
+    //	the interrupt flags and then clear them
+    enum ab1815_status_e set_status(status_t* status);
+    enum ab1815_status_e get_status(status_t* status);
 
-// 0x10
-enum ab1815_status_e set_control1(control1_t* control1);
-enum ab1815_status_e get_control1(control1_t* control1);
+    // 0x10
+    enum ab1815_status_e set_control1(control1_t* control1);
+    enum ab1815_status_e get_control1(control1_t* control1);
 
-// 0x11
-enum ab1815_status_e set_control2(control2_t* control2);
-enum ab1815_status_e get_control2(control2_t* control2);
+    // 0x11
+    enum ab1815_status_e set_control2(control2_t* control2);
+    enum ab1815_status_e get_control2(control2_t* control2);
 
-// 0x12
-enum ab1815_status_e set_interrupt_mask(inturrupt_mask_t* inturrupt_mask);
-enum ab1815_status_e get_interrupt_mask(inturrupt_mask_t* inturrupt_mask);
+    // 0x12
+    enum ab1815_status_e set_interrupt_mask(inturrupt_mask_t* inturrupt_mask);
+    enum ab1815_status_e get_interrupt_mask(inturrupt_mask_t* inturrupt_mask);
 
-// 0x13
-enum ab1815_status_e set_square_wave(square_wave_t* square_wave);
-enum ab1815_status_e get_square_wave(square_wave_t* square_wave);
+    // 0x13
+    enum ab1815_status_e set_square_wave(square_wave_t* square_wave);
+    enum ab1815_status_e get_square_wave(square_wave_t* square_wave);
 
-// 0x14
-enum ab1815_status_e set_cal_xt(cal_xt_t* cal_xt);
-enum ab1815_status_e get_cal_xt(cal_xt_t* cal_xt);
+    // 0x14
+    enum ab1815_status_e set_cal_xt(cal_xt_t* cal_xt);
+    enum ab1815_status_e get_cal_xt(cal_xt_t* cal_xt);
 
-// 0x15
-enum ab1815_status_e set_cal_rc_hi(cal_rc_hi_t* cal_rc_hi);
-enum ab1815_status_e get_cal_rc_hi(cal_rc_hi_t* cal_rc_hi);
+    // 0x15
+    enum ab1815_status_e set_cal_rc_hi(cal_rc_hi_t* cal_rc_hi);
+    enum ab1815_status_e get_cal_rc_hi(cal_rc_hi_t* cal_rc_hi);
 
-// 0x16
-enum ab1815_status_e set_cal_rc_low(cal_rc_low_t* cal_rc_low);
-enum ab1815_status_e get_cal_rc_low(cal_rc_low_t* cal_rc_low);
+    // 0x16
+    enum ab1815_status_e set_cal_rc_low(cal_rc_low_t* cal_rc_low);
+    enum ab1815_status_e get_cal_rc_low(cal_rc_low_t* cal_rc_low);
 
-// 0x17 sleep_control_t
-enum ab1815_status_e set_sleep_control(sleep_control_t* sleep_control);
-enum ab1815_status_e get_sleep_control(sleep_control_t* sleep_control);
+    // 0x17 sleep_control_t
+    enum ab1815_status_e set_sleep_control(sleep_control_t* sleep_control);
+    enum ab1815_status_e get_sleep_control(sleep_control_t* sleep_control);
 
-// 0x18 Set the countdown control register
-enum ab1815_status_e set_countdown_control(countdown_control_t* countdown_control);
-enum ab1815_status_e get_countdown_control(countdown_control_t* countdown_control);
+    // 0x18 Set the countdown control register
+    enum ab1815_status_e set_countdown_control(countdown_control_t* countdown_control);
+    enum ab1815_status_e get_countdown_control(countdown_control_t* countdown_control);
 
-// 0x19
-enum ab1815_status_e set_countdown_timer(uint8_t timer_value);
-enum ab1815_status_e get_countdown_timer(uint8_t* timer_value);
+    // 0x19
+    enum ab1815_status_e set_countdown_timer(uint8_t timer_value);
+    enum ab1815_status_e get_countdown_timer(uint8_t* timer_value);
 
-// 0x1A
-enum ab1815_status_e set_countdown_timer_initial_value(uint8_t timer_value);
-enum ab1815_status_e get_countdown_timer_initial_value(uint8_t* timer_value);
+    // 0x1A
+    enum ab1815_status_e set_countdown_timer_initial_value(uint8_t timer_value);
+    enum ab1815_status_e get_countdown_timer_initial_value(uint8_t* timer_value);
 
-// 0x1B
-enum ab1815_status_e set_watchdog_timer(watchdog_timer_t* watchdog_timer);
-enum ab1815_status_e get_watchdog_timer(watchdog_timer_t* watchdog_timer);
-
-
-// 0x1C Get the oscillator control register
-enum ab1815_status_e get_oscillator_control(oscillator_control_t *oscillator_control);
-enum ab1815_status_e set_oscillator_control(oscillator_control_t *oscillator_control);
-
-// 0x1D
-enum ab1815_status_e set_oscillator_status(oscillator_status_t* oscillator_status);
-enum ab1815_status_e get_oscillator_status(oscillator_status_t* oscillator_status);
-
-// 0x1E - Nothing on the AB1815
-// 0x1F
-enum ab1815_status_e set_configuration_key(enum configuration_key_e configuration_key);
-
-// 0x20
-enum ab1815_status_e set_trickle(trickle_t* trickle);
-enum ab1815_status_e get_trickle(trickle_t* trickle);
-
-// 0x21
-enum ab1815_status_e set_bref_control(bref_control_t* bref_control);
-enum ab1815_status_e get_bref_control(bref_control_t* bref_control);
-
-// 0x26
-enum ab1815_status_e set_afctrl(afctrl_e afctrl);
-enum ab1815_status_e get_(afctrl_e* afctrl);
-
-// 0x27
-enum ab1815_status_e set_batmodeio(enum ab1815_batmodeio_e mode);
-enum ab1815_status_e get_batmodeio(enum ab1815_batmodeio_e* mode);
-
-// 0x28
-enum ab1815_status_e get_id(struct ab1815_id_t *id);
-
-// 0x2F
-enum ab1815_status_e set_analog_status_register(ab1815_analog_status_t* analog_status);
-enum ab1815_status_e get_analog_status_register(ab1815_analog_status_t* analog_status);
-
-// 0x30
-enum ab1815_status_e set_output_control(ab1815_output_control_t* output_control);
-enum ab1815_status_e get_output_control(ab1815_output_control_t* output_control);
-
-// 0x3F
-enum ab1815_status_e set_extension_ram(extension_ram_t* extension_ram);
-enum ab1815_status_e get_extension_ram(extension_ram_t* extension_ram);
+    // 0x1B
+    enum ab1815_status_e set_watchdog_timer(watchdog_timer_t* watchdog_timer);
+    enum ab1815_status_e get_watchdog_timer(watchdog_timer_t* watchdog_timer);
 
 
-void hex_dump(FILE* dump_to);
+    // 0x1C Get the oscillator control register
+    enum ab1815_status_e get_oscillator_control(oscillator_control_t *oscillator_control);
+    enum ab1815_status_e set_oscillator_control(oscillator_control_t *oscillator_control);
+
+    // 0x1D
+    enum ab1815_status_e set_oscillator_status(oscillator_status_t* oscillator_status);
+    enum ab1815_status_e get_oscillator_status(oscillator_status_t* oscillator_status);
+
+    // 0x1E - Nothing on the AB1815
+    // 0x1F
+    enum ab1815_status_e set_configuration_key(enum configuration_key_e configuration_key);
+
+    // 0x20
+    enum ab1815_status_e set_trickle(trickle_t* trickle);
+    enum ab1815_status_e get_trickle(trickle_t* trickle);
+
+    // 0x21
+    enum ab1815_status_e set_bref_control(bref_control_t* bref_control);
+    enum ab1815_status_e get_bref_control(bref_control_t* bref_control);
+
+    // 0x26
+    enum ab1815_status_e set_afctrl(afctrl_e afctrl);
+    enum ab1815_status_e get_(afctrl_e* afctrl);
+
+    // 0x27
+    enum ab1815_status_e set_batmodeio(enum ab1815_batmodeio_e mode);
+    enum ab1815_status_e get_batmodeio(enum ab1815_batmodeio_e* mode);
+
+    // 0x28
+    enum ab1815_status_e get_id(struct ab1815_id_t *id);
+
+    // 0x2F
+    enum ab1815_status_e set_analog_status_register(ab1815_analog_status_t* analog_status);
+    enum ab1815_status_e get_analog_status_register(ab1815_analog_status_t* analog_status);
+
+    // 0x30
+    enum ab1815_status_e set_output_control(ab1815_output_control_t* output_control);
+    enum ab1815_status_e get_output_control(ab1815_output_control_t* output_control);
+
+    // 0x3F
+    enum ab1815_status_e set_extension_ram(extension_ram_t* extension_ram);
+    enum ab1815_status_e get_extension_ram(extension_ram_t* extension_ram);
+
+
+    void hex_dump(FILE* dump_to);
 
 };
 
