@@ -33,17 +33,17 @@ AB1815::AB1815(uint16_t cs_pin){
 	init();
 }
 
-enum ab1815_status AB1815::init()
+enum ab1815_status_e AB1815::init()
 {
 	this->fields._12_24 = 0;
 	this->fields.clk_source = 0;
-	enum ab1815_status status = get_id(&this->id);
-	if(status == ab1815_status_OK)
+	enum ab1815_status_e status = get_id(&this->id);
+	if(status == ab1815_status_e_OK)
 	{
 		if(!(this->id.ID0 == 18 && (this->id.ID1 == 4 || this->id.ID1 == 5 || this->id.ID1 == 14 || this->id.ID1 == 15)))
 		{
 			printf("Invalid Clock ID.");
-			status = ab1815_status_ERROR;
+			status = ab1815_status_e_ERROR;
 		}
 		
 	}
@@ -61,10 +61,10 @@ void AB1815::spi_select_slave(bool select)
 	}
 }
 
-enum ab1815_status AB1815::read(uint8_t offset, uint8_t *buf, uint8_t length)
+enum ab1815_status_e AB1815::read(uint8_t offset, uint8_t *buf, uint8_t length)
 {
 	uint8_t address = AB1815_SPI_READ(offset);
-	enum ab1815_status ret_code = ab1815_status_OK;
+	enum ab1815_status_e ret_code = ab1815_status_e_OK;
 	SPI.begin();
 	spi_select_slave(true);
 	SPI.transfer(address);
@@ -74,17 +74,17 @@ enum ab1815_status AB1815::read(uint8_t offset, uint8_t *buf, uint8_t length)
 		 val = SPI.transfer(0);
 		 buf[i] = val;
 	}
-	ret_code = ab1815_status_OK;
+	ret_code = ab1815_status_e_OK;
 	spi_select_slave(false);
 	SPI.end();
 	return ret_code;
 };
 
-enum ab1815_status AB1815::write(uint8_t offset, uint8_t *buf, uint8_t length)
+enum ab1815_status_e AB1815::write(uint8_t offset, uint8_t *buf, uint8_t length)
 {
 
 	uint8_t address = AB1815_SPI_WRITE(offset);
-	enum ab1815_status ret_code = ab1815_status_OK;
+	enum ab1815_status_e ret_code = ab1815_status_e_OK;
 
 
 	SPI.begin();
@@ -118,15 +118,15 @@ void AB1815::set(time_t time)
 }
 
 // 0x00
-enum ab1815_status AB1815::get_time(ab1815_tmElements_t *time)
+enum ab1815_status_e AB1815::get_time(ab1815_tmElements_t *time)
 {
-			enum ab1815_status to_ret = ab1815_status_ERROR;
+			enum ab1815_status_e to_ret = ab1815_status_e_ERROR;
 			size_t length = (AB1815_REG_ALARM_HUNDREDTHS - AB1815_REG_TIME_HUNDREDTHS) ;
 			uint8_t buffer[length];
 			memset(buffer, 0, length);
-			if(read(AB1815_REG_TIME_HUNDREDTHS, buffer, length) == ab1815_status_OK)
+			if(read(AB1815_REG_TIME_HUNDREDTHS, buffer, length) == ab1815_status_e_OK)
 			{
-				to_ret = ab1815_status_OK;
+				to_ret = ab1815_status_e_OK;
 				time->Hundredth = bcd2bin(buffer[0]);
 				time->Second = bcd2bin(0x7F & buffer[1]);
 				time->Minute = bcd2bin(0x7F & buffer[2]);
@@ -140,11 +140,11 @@ enum ab1815_status AB1815::get_time(ab1815_tmElements_t *time)
 }
 
 // 0x00
-enum ab1815_status AB1815::set_time(ab1815_tmElements_t *time)
+enum ab1815_status_e AB1815::set_time(ab1815_tmElements_t *time)
 {
 	size_t length = (AB1815_REG_ALARM_HUNDREDTHS - AB1815_REG_TIME_HUNDREDTHS);
 	uint8_t buffer[length];
-	enum ab1815_status result = ab1815_status_ERROR;
+	enum ab1815_status_e result = ab1815_status_e_ERROR;
 
 	memset(buffer, 0, length);
 	buffer[0] = bin2bcd(time->Hundredth);
@@ -156,15 +156,15 @@ enum ab1815_status AB1815::set_time(ab1815_tmElements_t *time)
 	buffer[6] = bin2bcd(tmYearToY2k(time->Year));
 	buffer[7] = bin2bcd(0x07 & time->Wday);
 
-	if(write(AB1815_REG_TIME_HUNDREDTHS, buffer, length) == ab1815_status_OK)
+	if(write(AB1815_REG_TIME_HUNDREDTHS, buffer, length) == ab1815_status_e_OK)
 	{
-		result = ab1815_status_OK;
+		result = ab1815_status_e_OK;
 	}
 
 	return result;
 };
 
-enum ab1815_status AB1815::clear_hundrdeds()
+enum ab1815_status_e AB1815::clear_hundrdeds()
 {
 	uint8_t buf[1];
 	buf[0] = 0;
@@ -172,20 +172,20 @@ enum ab1815_status AB1815::clear_hundrdeds()
 };
 
 // 0x08
-enum ab1815_status AB1815::get_alarm(ab1815_tmElements_t *time, enum ab1815_alarm_repeat_mode *alarm_mode)
+enum ab1815_status_e AB1815::get_alarm(ab1815_tmElements_t *time, enum ab1815_alarm_repeat_mode *alarm_mode)
 {
-	enum ab1815_status to_ret = ab1815_status_ERROR;
+	enum ab1815_status_e to_ret = ab1815_status_e_ERROR;
 	size_t length = AB1815_REG_STATUS - AB1815_REG_ALARM_HUNDREDTHS ;
 	uint8_t buffer[length];
 	memset(buffer, 0, length);
 	struct countdown_control_t cd_reg;
 	uint32_t *val = (uint32_t*)alarm_mode;
 	
-	if(get_countdown_control(&cd_reg) == ab1815_status_OK)
+	if(get_countdown_control(&cd_reg) == ab1815_status_e_OK)
 	{
-		if(read(AB1815_REG_ALARM_HUNDREDTHS, buffer, length) == ab1815_status_OK)
+		if(read(AB1815_REG_ALARM_HUNDREDTHS, buffer, length) == ab1815_status_e_OK)
 		{
-			to_ret = ab1815_status_OK;
+			to_ret = ab1815_status_e_OK;
 			time->Hundredth = bcd2bin(buffer[0]);
 			time->Second = bcd2bin(0x7F & buffer[1]);
 			time->Minute = bcd2bin(0x7F & buffer[2]);
@@ -212,11 +212,11 @@ enum ab1815_status AB1815::get_alarm(ab1815_tmElements_t *time, enum ab1815_alar
 };
 
 // 0x08
-enum ab1815_status AB1815::set_alarm(ab1815_tmElements_t *time, enum ab1815_alarm_repeat_mode alarm_mode)
+enum ab1815_status_e AB1815::set_alarm(ab1815_tmElements_t *time, enum ab1815_alarm_repeat_mode alarm_mode)
 {
 	size_t length = AB1815_REG_STATUS - AB1815_REG_ALARM_HUNDREDTHS;
 	uint8_t buffer[length];
-	enum ab1815_status result = ab1815_status_ERROR;
+	enum ab1815_status_e result = ab1815_status_e_ERROR;
 	uint8_t repeat = alarm_mode;
 	
 	memset(buffer, 0, length);
@@ -242,11 +242,11 @@ enum ab1815_status AB1815::set_alarm(ab1815_tmElements_t *time, enum ab1815_alar
 			repeat = alarm_mode;
 	}
 	
-	if(write(AB1815_REG_ALARM_HUNDREDTHS, buffer, length) == ab1815_status_OK)
+	if(write(AB1815_REG_ALARM_HUNDREDTHS, buffer, length) == ab1815_status_e_OK)
 	{
 		struct countdown_control_t cd_reg;
 		
-		if(get_countdown_control(&cd_reg) == ab1815_status_OK)
+		if(get_countdown_control(&cd_reg) == ab1815_status_e_OK)
 		{
 			cd_reg.fields.RPT = repeat;
 			return set_countdown_control(&cd_reg);
@@ -258,80 +258,243 @@ enum ab1815_status AB1815::set_alarm(ab1815_tmElements_t *time, enum ab1815_alar
 // 0x0F - See also: ARST in Control1.
 //	If ARST is a 1, a read of the Status register will produce the current state of all
 //	the interrupt flags and then clear them
-enum ab1815_status AB1815::set_status(status_t* status)
+enum ab1815_status_e AB1815::set_status(status_t* status)
 {
-		return write(AB1815_REG_STATUS, &status->raw, 1);
+		return write(AB1815_REG_STATUS, &status->value, 1);
 };
 
-enum ab1815_status AB1815::get_status(status_t* status)
+enum ab1815_status_e AB1815::get_status(status_t* status)
 {
-			return read(AB1815_REG_STATUS, &status->raw, 1);
+			return read(AB1815_REG_STATUS, &status->value, 1);
 };
 
 // 0x10
-enum ab1815_status AB1815::set_control1(control1_t* control1)
+enum ab1815_status_e AB1815::set_control1(control1_t* control1)
 {
-	return write(AB1815_REG_CONTROL1, &control1->raw, 1);
+	return write(AB1815_REG_CONTROL1, &control1->value, 1);
 };
 
-enum ab1815_status AB1815::get_control1(control1_t* control1)
+enum ab1815_status_e AB1815::get_control1(control1_t* control1)
 {
-	return read(AB1815_REG_CONTROL1, &control1->raw, 1);
+	return read(AB1815_REG_CONTROL1, &control1->value, 1);
 };
 
 // 0x11
-enum ab1815_status AB1815::set_control2(control2_t* control2)
+enum ab1815_status_e AB1815::set_control2(control2_t* control2)
 {
-	return write(AB1815_REG_CONTROL2, &control2->raw, 1);
+	return write(AB1815_REG_CONTROL2, &control2->value, 1);
 };
 
-enum ab1815_status AB1815::get_control2(control2_t* control2)
+enum ab1815_status_e AB1815::get_control2(control2_t* control2)
 {
-	return read(AB1815_REG_CONTROL2, &control2->raw, 1);
+	return read(AB1815_REG_CONTROL2, &control2->value, 1);
 };
 
 // 0x12
-enum ab1815_status AB1815::set_interrupt_mask(inturrupt_mask_t* inturrupt_mask)
+enum ab1815_status_e AB1815::set_interrupt_mask(inturrupt_mask_t* inturrupt_mask)
 {
-	return write(AB1815_REG_INTERRUPT_MASK, &inturrupt_mask->raw, 1);
+	return write(AB1815_REG_INTERRUPT_MASK, &inturrupt_mask->value, 1);
 };
 
-enum ab1815_status AB1815::get_interrupt_mask(inturrupt_mask_t* inturrupt_mask)
+enum ab1815_status_e AB1815::get_interrupt_mask(inturrupt_mask_t* inturrupt_mask)
 {
-	return read(AB1815_REG_INTERRUPT_MASK, &inturrupt_mask->raw, 1);
+	return read(AB1815_REG_INTERRUPT_MASK, &inturrupt_mask->value, 1);
 };
+
+// 0x13
+enum ab1815_status_e AB1815::set_square_wave(square_wave_t* square_wave)
+{
+	return write(AB1815_REG_SQW, &square_wave->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_square_wave(square_wave_t* square_wave)
+{
+	return read(AB1815_REG_SQW, &square_wave->value, 1);
+}
+
+// 0x14
+enum ab1815_status_e AB1815::set_cal_xt(cal_xt_t* cal_xt)
+{
+	return write(AB1815_REG_CAL_XT, &cal_xt->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_cal_xt(cal_xt_t* cal_xt)
+{
+	return read(AB1815_REG_CAL_XT, &cal_xt->value, 1);
+}
+
+// 0x15
+enum ab1815_status_e AB1815::set_cal_rc_hi(cal_rc_hi_t* cal_rc_hi)
+{
+	return write(AB1815_REG_CAL_RC_HI, &cal_rc_hi->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_cal_rc_hi(cal_rc_hi_t* cal_rc_hi)
+{
+	return read(AB1815_REG_CAL_RC_HI, &cal_rc_hi->value, 1);
+}
+
+// 0x16
+enum ab1815_status_e AB1815::set_cal_rc_low(cal_rc_low_t* cal_rc_low)
+{
+	return write(AB1815_REG_CAL_RC_LOW, &cal_rc_low->OFFSETR, 1);
+}
+
+enum ab1815_status_e AB1815::get_cal_rc_low(cal_rc_low_t* cal_rc_low)
+{
+	return read(AB1815_REG_CAL_RC_LOW, &cal_rc_low->OFFSETR, 1);
+}
 
 // 0x17 sleep_control_t
-enum ab1815_status AB1815::set_sleep_control(sleep_control_t* sleep_control)
+enum ab1815_status_e AB1815::set_sleep_control(sleep_control_t* sleep_control)
 {
-	return write(AB1815_REG_SLEEP_CONTROL, &sleep_control->raw, 1);
+	return write(AB1815_REG_SLEEP_CONTROL, &sleep_control->value, 1);
 };
 
-enum ab1815_status AB1815::get_sleep_control(sleep_control_t* sleep_control)
+enum ab1815_status_e AB1815::get_sleep_control(sleep_control_t* sleep_control)
 {
-	return read( AB1815_REG_SLEEP_CONTROL, &sleep_control->raw, 1);
+	return read( AB1815_REG_SLEEP_CONTROL, &sleep_control->value, 1);
 };
 
 // 0x18
-enum ab1815_status AB1815::set_countdown_control(countdown_control_t* countdown_control)
+enum ab1815_status_e AB1815::set_countdown_control(countdown_control_t* countdown_control)
 {
-	return write(AB1815_REG_COUNTDOWN_TIMER_CONTROL, &countdown_control->raw, 1);
+	return write(AB1815_REG_COUNTDOWN_TIMER_CONTROL, &countdown_control->value, 1);
 };
 
-enum ab1815_status AB1815::get_countdown_control(countdown_control_t* countdown_control)
+enum ab1815_status_e AB1815::get_countdown_control(countdown_control_t* countdown_control)
 {
-	return read(AB1815_REG_COUNTDOWN_TIMER_CONTROL, &countdown_control->raw, 1);
+	return read(AB1815_REG_COUNTDOWN_TIMER_CONTROL, &countdown_control->value, 1);
 };
 
-enum ab1815_status AB1815::get_id(ab1815_id_t *id)
+// 0x19
+enum ab1815_status_e AB1815::set_countdown_timer(uint8_t timer_value)
+{
+	return write(AB1815_REG_COUNTDOWN_TIMER, &timer_value, 1);
+}
+
+enum ab1815_status_e AB1815::get_countdown_timer(uint8_t* timer_value)
+{
+	return read(AB1815_REG_COUNTDOWN_TIMER, timer_value, 1);
+}
+
+// 0x1A
+enum ab1815_status_e AB1815::set_countdown_timer_initial_value(uint8_t timer_value)
+{
+	return write(AB1815_REG_COUNTDOWN_TIMER_INITIAL, &timer_value, 1);
+}
+
+enum ab1815_status_e AB1815::get_countdown_timer_initial_value(uint8_t* timer_value)
+{
+	return read(AB1815_REG_COUNTDOWN_TIMER_INITIAL, timer_value, 1);
+}
+
+// 0x1B
+enum ab1815_status_e AB1815::set_watchdog_timer(watchdog_timer_t* watchdog_timer)
+{
+	return write(AB1815_REG_WATCHDOG_TIMER, &watchdog_timer->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_watchdog_timer(watchdog_timer_t* watchdog_timer)
+{
+	return read(AB1815_REG_WATCHDOG_TIMER, &watchdog_timer->value, 1);
+}
+
+
+// 0x1C Get the oscillator control register
+enum ab1815_status_e AB1815::get_oscillator_control(struct oscillator_control_t *oscillator_control)
+{
+	return read(AB1815_REG_OSCILLATOR_CONTROL, &oscillator_control->value, 1);
+};
+
+enum ab1815_status_e AB1815::set_oscillator_control(struct oscillator_control_t *oscillator_control)
+{
+	if(set_configuration_key(ab1815_oscillator_control) != ab1815_status_e_OK)
+	{
+		return ab1815_status_e_ERROR;
+	}
+	return write(AB1815_REG_OSCILLATOR_CONTROL, &oscillator_control->value, 1);
+};
+
+
+// 0x1D
+enum ab1815_status_e AB1815::set_oscillator_status(oscillator_status_t* oscillator_status)
+{
+	return write(AB1815_REG_OSCILLATOR_STATUS, &oscillator_status->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_oscillator_status(oscillator_status_t* oscillator_status)
+{
+	return read(AB1815_REG_OSCILLATOR_STATUS, &oscillator_status->value, 1);
+}
+
+// 0x1E - Nothing on the AB1815
+// 0x1F
+enum ab1815_status_e AB1815::set_configuration_key(enum configuration_key_e configuration_key)
+{
+	return write(AB1815_REG_CONFIGURATION_KEY, (uint8_t *)&configuration_key, 1);
+};
+
+// 0x20
+enum ab1815_status_e AB1815::set_trickle(trickle_t* trickle)
+{
+	return write(AB1815_REG_TRICKLE_CONTROL, &trickle->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_trickle(trickle_t* trickle)
+{
+	return read(AB1815_REG_TRICKLE_CONTROL, &trickle->value, 1);
+}
+
+// 0x21
+enum ab1815_status_e AB1815::set_bref_control(bref_control_t* bref_control)
+{
+	return write(AB1815_REG_BREF_CONTROL, &bref_control->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_bref_control(bref_control_t* bref_control)
+{
+	return read(AB1815_REG_BREF_CONTROL, &bref_control->value, 1);
+}
+
+// 0x26
+enum ab1815_status_e AB1815::set_afctrl(afctrl_e afctrl)
+{
+	return write(AB1815_REG_AFCTRL, (uint8_t*)&afctrl, 1);
+}
+
+enum ab1815_status_e AB1815::get_(afctrl_e* afctrl)
+{
+	return read(AB1815_REG_AFCTRL, (uint8_t*)afctrl, 1);
+}
+
+// 0x27
+enum ab1815_status_e AB1815::set_batmodeio(enum ab1815_batmodeio_e mode)
+{
+	if(set_configuration_key(ab1815_reg_control) != ab1815_status_e_OK)
+	{
+		return ab1815_status_e_ERROR;
+	}
+	uint8_t buf[1];
+	buf[0] = mode;
+	return write(AB1815_REG_BATMODE_IO, buf, 1);
+};
+
+enum ab1815_status_e AB1815::get_batmodeio(enum ab1815_batmodeio_e* mode)
+{
+	return read(AB1815_REG_BATMODE_IO, (uint8_t*)mode, 1);
+}
+
+// 0x28
+enum ab1815_status_e AB1815::get_id(ab1815_id_t *id)
 {
 	size_t length = AB1815_REG_ID6 - AB1815_REG_ID0; 
 	uint8_t buffer[length];
 	memset(buffer, 0, length);
-	enum ab1815_status result = ab1815_status_ERROR;
+	enum ab1815_status_e result = ab1815_status_e_ERROR;
 	
 	result = read(AB1815_REG_ID0, buffer, length);
-	if(result == ab1815_status_OK)
+	if(result == ab1815_status_e_OK)
 	{
 		id->ID0 = bcd2bin(buffer[0]);
 		id->ID1 = bcd2bin(buffer[1]);
@@ -347,59 +510,50 @@ enum ab1815_status AB1815::get_id(ab1815_id_t *id)
 	
 };
 
-enum ab1815_status AB1815::get_oscillator_control(struct oscillator_control_t *oscillator_control)
+// 0x2F
+enum ab1815_status_e AB1815::set_analog_status_register(ab1815_analog_status_t* analog_status)
 {
-	return read(AB1815_REG_OSCILLATOR_CONTROL, &oscillator_control->value, 1);
-};
-
-enum ab1815_status AB1815::set_oscillator_control(struct oscillator_control_t *oscillator_control)
-{
-	if(set_configuration_key(ab1815_oscillator_control) != ab1815_status_OK)
-	{
-		return ab1815_status_ERROR;
-	}
-	return write(AB1815_REG_OSCILLATOR_CONTROL, &oscillator_control->value, 1);
-};
-
-
-enum ab1815_status AB1815::set_configuration_key(enum configuration_key_t configuration_key)
-{
-	return write(AB1815_REG_CONFIGURATION_KEY, (uint8_t *)&configuration_key, 1);
-};
-
-
-enum ab1815_status AB1815::set_batmodeio(enum ab1815_batmodeio mode)
-{
-	if(set_configuration_key(ab1815_reg_control) != ab1815_status_OK)
-	{
-		return ab1815_status_ERROR;
-	}
-	uint8_t buf[1];
-	buf[0] = mode;
-	return write(AB1815_REG_BATMODE_IO, buf, 1);
-};
-
-void p(const char *fmt, ... ){
-        char buf[128]; // resulting string limited to 128 chars
-        va_list args;
-        va_start (args, fmt );
-        vsnprintf(buf, 128, fmt, args);
-        va_end (args);
-        Serial.print(buf);
+	return write(AB1815_REG_ANALOG_STATUS, &analog_status->value, 1);
 }
 
-void AB1815::hex_dump()
+enum ab1815_status_e AB1815::get_analog_status_register(ab1815_analog_status_t* analog_status)
+{
+	return read(AB1815_REG_ANALOG_STATUS, &analog_status->value, 1);
+}
+
+// 0x30
+enum ab1815_status_e AB1815::set_output_control(ab1815_output_control_t* output_control)
+{
+	return write(AB1815_REG_OUTPUT_CONTROL, &output_control->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_output_control(ab1815_output_control_t* output_control)
+{
+	return read(AB1815_REG_OUTPUT_CONTROL, &output_control->value, 1);
+}
+
+
+// 0x3F
+enum ab1815_status_e AB1815::set_extension_ram(extension_ram_t* extension_ram)
+{
+	return write(AB1815_EXTENTION_RAM, &extension_ram->value, 1);
+}
+
+enum ab1815_status_e AB1815::get_extension_ram(extension_ram_t* extension_ram)
+{
+	return read(AB1815_EXTENTION_RAM, &extension_ram->value, 1);
+}
+
+
+void AB1815::hex_dump(FILE* dump_to)
 {
 
 	uint8_t buffer[8];
-//	p("\033[s");
 	for(uint8_t pos = 0; pos < 0x7F; pos += 8)
 	{
 		read(pos, buffer, 8);
-
-		p("# 0x%02x: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\r\n", pos, buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], buffer[6], buffer[7]);
+		fprintf(dump_to, "# 0x%02x: 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x 0x%02x\r\n", pos, buffer[0], buffer[1], buffer[2], buffer[3], buffer[4], buffer[5], buffer[6], buffer[7]);
 	}
-//	p("\033[u");
 }
 
 
