@@ -357,7 +357,7 @@ enum ab1815_fout_nirq_pin_control_e
 	ab1815_fout_nIRQ_or_OUT = 0,         // If at least one interrupt is enabled
 	ab1815_fout_SQW_or_OUT = 1,          // If SQWE == 1
 	ab1815_fout_SQW_or_nIRQ_or_OUT = 2,  // If SQWE == 1, else nIRQ if at least one interrupt is enabled
-	ab1815_fout_nAIRQ_orOUT = 3          // If AIE == 1
+	ab1815_fout_nAIRQ_or_OUT = 3         // If AIE == 1
 };
 
 enum days_of_week_e {
